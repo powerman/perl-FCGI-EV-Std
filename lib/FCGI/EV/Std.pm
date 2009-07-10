@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('1.2.2');    # update POD & Changes & README
+use version; our $VERSION = qv('1.3.0');    # update POD & Changes & README
 
 # update DEPENDENCIES in POD & Makefile.PL & README
 use Scalar::Util qw( weaken );
@@ -230,7 +230,7 @@ FCGI::EV::Std requires no configuration files or environment variables.
 
 =head1 DEPENDENCIES
 
-None.
+ version
 
 
 =head1 INCOMPATIBILITIES

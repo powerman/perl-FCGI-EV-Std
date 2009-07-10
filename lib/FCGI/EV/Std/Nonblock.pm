@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.0.2');    # update POD & Changes & README
+use version; our $VERSION = qv('0.1.0');    # update POD & Changes & README
 
 # update DEPENDENCIES in POD & Makefile.PL & README
 use Scalar::Util qw( weaken refaddr );
@@ -14,8 +14,11 @@ $FCGI::EV::Std::BLOCKING= 0;
 $FCGI::EV::Std::MAIN    = \&new;
 $FCGI::EV::Std::HUP     = \&HUP;
 
-my $HANDLER             = \&main::HANDLER;
-my $HUP                 = \&main::HUP;
+my $cb_start            = \&main::START;
+my $cb_pre              = \&main::PRE;
+my $cb_post             = \&main::POST;
+my $cb_error            = \&main::ERROR;
+#my $HUP                 = undef;
 
 my (%Active, %Server);
 
@@ -26,7 +29,7 @@ sub new {
     $Active{ refaddr($self)     } = $server;
     $Server{ refaddr($server)   } = $self;
     weaken( $Active{ refaddr($self) } );
-    $HANDLER->($self);
+    $self->_wrapper($cb_start);
     return;
 }
 
@@ -50,7 +53,7 @@ sub HUP {
     return if !$server; # may happens during global destruction
     if (exists $Server{ refaddr($server) }) {
         my $self = delete $Server{ refaddr($server) };
-        $HUP->($self);
+#        $HUP && $HUP->($self);
     }
     return;
 }
@@ -64,10 +67,23 @@ sub send {  ## no critic (ProhibitBuiltinHomonyms)
     return;
 }
 
-sub make_cb {
-    my ($self, @p) = @_;
-    weaken( my $this = $self );
-    return sub { $this && $HANDLER->($this, @p, @_) };
+sub wrap_cb {
+    my ($self, $cb, @p) = @_;
+    weaken(my $this = $self);
+    return sub { $this && $this->_wrapper($cb, @p, @_) };
+}
+
+sub _wrapper {
+    my ($this, $cb, @p) = @_;
+
+    $cb_pre->($this);
+    my $err = eval { $cb->($this, @p); 1 } ? undef : $@;
+    $cb_post->($this);
+
+    if (defined $err) {
+        $cb_error->($this, $err);
+    }
+    return;
 }
 
 
@@ -81,7 +97,7 @@ FCGI::EV::Std::Nonblock - Ease non-blocking CGI using FCGI::EV::Std
 
 =head1 VERSION
 
-This document describes FCGI::EV::Std::Nonblock version 0.0.2
+This document describes FCGI::EV::Std::Nonblock version 0.1.0
 
 
 =head1 SYNOPSIS
@@ -96,18 +112,12 @@ This document describes FCGI::EV::Std::Nonblock version 0.0.2
  # Example CGI with FCGI::EV::Std::Nonblock interface
  #
  
- sub HUP {}
-
- sub HANDLER {
-    my ($this, $callback, @params) = @_;
-    if (!defined $callback) {
-        # new request!
-        EV::timer 1, 0, $this->make_cb(\&reply);
-    }
-    else {
-        # continue request ...
-        $callback->($this, @params);
-    }
+ sub PRE {}
+ sub POST {}
+ sub ERROR {}
+ sub START {
+    my ($this) = @_;
+    EV::timer 1, 0, $this->wrap_cb(\&reply);
  }
 
  sub reply {
@@ -122,7 +132,7 @@ This document describes FCGI::EV::Std::Nonblock version 0.0.2
 
 =head1 DESCRIPTION
 
-This module will made using L<FCGI::EV::Std> in non-blocking mode ease for
+This module will made use of L<FCGI::EV::Std> in non-blocking mode ease for
 user. To activate it it's enough to load that module - it will
 automatically reconfigure FCGI::EV::Std and that result in calling user
 code on incoming CGI requests in completely different way than explained
@@ -136,28 +146,27 @@ FCGI::EV::Std, so only user-configurable variable left is $MAX_STDIN
 (see L<FCGI::EV::Std> documentation for details).
 
 On incoming CGI request this module will call user function
-main::HANDLER($this). The $this parameter is object related to ... this :)
+main::START($this). The $this parameter is object related to ... this :)
 CGI request. This object has several methods listed below, but no fields -
 user can use $this as usual HASHREF to store ANY data related to this request.
 
-To keep access to $this in when user need to delay processing of this CGI
+To keep access to $this when user need to delay processing of this CGI
 request until some event happens, user should generate callback for that event
-in special way - using $this->make_cb($callback, @params) method.
-This way when event happens main::HANDLER($this, $callback, @params) will be
-called, and user will have both $this and $callback to run.
-
-As you see, main::HANDLER() will be called both when new CGI request start,
-and when it continues after some event. User can distinguish between these
-cases by checking amount of arguments - when new request start there will be
-only argument ($this).
+in special way - using $this->wrap_cb($callback, @params) method.
+This way when event happens $callback->($this, @params, @event_params)
+will be called, and user will have $this.
 
 User should send reply to web server using $this->send($data) and
 $this->done() methods.
 
-If connection to web server become broken this module will call user function
-main::HUP($this). Of course, $this will be same object as was sent to
-main::HANDLER() when this CGI request was started. So user have to provide
-at least empty sub HUP {} if he doesn't wanna receive such notifications.
+There also 3 another predefined functions which user must define: main::PRE,
+main::POST and main::ERROR. The PRE($this) and POST($this) will be called
+before and after user's main::START and $callback prepared using
+$this->wrap_cb() - you can use these hooks to setup some environment which
+all your callbacks need and make some cleanup after them. The ERROR($this, $@)
+will be called if main::START or $callback will throw exception.
+Exceptions within PRE, POST and ERROR will not be intercepted and will
+kill your process.
 
 =over
 
@@ -175,12 +184,18 @@ references to $this after calling done()!
 
 Return nothing.
 
-=item make_cb( $callback, @params )
+=item wrap_cb( $callback, @params )
 
 Will generate special CODEREF which, when called, will result in calling
-main::HANDLER($this, $callback, @params). User must ALWAYS use this way
+$callback->($this, @params, @callback_params). User must ALWAYS use this way
 of generating callbacks for event watchers to not lose access to $this
-and have same entry point for all events (main::HANDLER()).
+in event handlers, automatically execute main::PRE and main::POST hooks
+before and after $callback, and intercept exceptions in $callback (which
+will be automatically delivered to main::ERROR hook after executing POST
+hook.
+
+The PRE and POST hooks will have only parameter: $this.
+The ERROR hook will two parameters: $this and $exception (stored copy of $@).
 
 =back
 
@@ -197,7 +212,7 @@ FCGI::EV::Std::Nonblock requires no configuration files or environment variables
 
 =head1 DEPENDENCIES
 
-None.
+ version
 
 
 =head1 INCOMPATIBILITIES
