@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.1.0');    # update POD & Changes & README
+use version; our $VERSION = qv('1.3.1');    # update POD & Changes & README
 
 # update DEPENDENCIES in POD & Makefile.PL & README
 use Scalar::Util qw( weaken refaddr );
@@ -97,7 +97,7 @@ FCGI::EV::Std::Nonblock - Ease non-blocking CGI using FCGI::EV::Std
 
 =head1 VERSION
 
-This document describes FCGI::EV::Std::Nonblock version 0.1.0
+This document describes FCGI::EV::Std::Nonblock version 1.3.1
 
 
 =head1 SYNOPSIS
@@ -117,7 +117,7 @@ This document describes FCGI::EV::Std::Nonblock version 0.1.0
  sub ERROR {}
  sub START {
     my ($this) = @_;
-    EV::timer 1, 0, $this->wrap_cb(\&reply);
+    $this->{timer} = EV::timer 1, 0, $this->wrap_cb(\&reply);
  }
 
  sub reply {

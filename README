@@ -1,4 +1,4 @@
-FCGI-EV-Std version 1.2.2
+FCGI-EV-Std version 1.3.1
 
 This module must be used together with FCGI::EV. It will handle CGI
 requests received by FCGI::EV. Both blocking and non-blocking CGI request
