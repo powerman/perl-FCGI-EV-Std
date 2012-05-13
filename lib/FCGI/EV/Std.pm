@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('1.3.1');    # update POD & Changes & README
+use version; our $VERSION = qv('1.3.2');    # update POD & Changes & README
 
 # update DEPENDENCIES in POD & Makefile.PL & README
 use Scalar::Util qw( weaken );
@@ -21,7 +21,7 @@ use constant HTTP_417_EXPECTATION_FAILED =>
   . '<p>Request entity too large or incomplete.</p></body></html>'
   ;
 
-use constant MiB => 1*1024*1024;
+use constant MiB => 1*1024*1024;    ## no critic (Capitalization)
 
 our $BLOCKING   = 1;
 our $MAX_STDIN  = MiB;
@@ -108,7 +108,7 @@ FCGI::EV::Std - Handler class to use with FCGI::EV
 
 =head1 VERSION
 
-This document describes FCGI::EV::Std version 1.3.1
+This document describes FCGI::EV::Std version 1.3.2
 
 
 =head1 SYNOPSIS
