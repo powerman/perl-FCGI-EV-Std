@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('1.3.2');    # update POD & Changes & README
+use version; our $VERSION = qv('1.3.3');    # update POD & Changes & README
 
 # update DEPENDENCIES in POD & Makefile.PL & README
 use Scalar::Util qw( weaken );
@@ -108,7 +108,7 @@ FCGI::EV::Std - Handler class to use with FCGI::EV
 
 =head1 VERSION
 
-This document describes FCGI::EV::Std version 1.3.2
+This document describes FCGI::EV::Std version 1.3.3
 
 
 =head1 SYNOPSIS
