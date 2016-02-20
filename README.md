@@ -7,7 +7,7 @@ FCGI::EV::Std - Handler class to use with FCGI::EV
 
 # VERSION
 
-This document describes FCGI::EV::Std version v1.3.3
+This document describes FCGI::EV::Std version v2.0.0
 
 # SYNOPSIS
 

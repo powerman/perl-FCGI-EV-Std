@@ -53,11 +53,11 @@
    "provides" : {
       "FCGI::EV::Std" : {
          "file" : "lib/FCGI/EV/Std.pm",
-         "version" : "v1.3.3"
+         "version" : "v2.0.0"
       },
       "FCGI::EV::Std::Nonblock" : {
          "file" : "lib/FCGI/EV/Std/Nonblock.pm",
-         "version" : "v1.3.3"
+         "version" : "v2.0.0"
       }
    },
    "release_status" : "stable",
@@ -72,6 +72,6 @@
          "web" : "https://github.com/powerman/perl-FCGI-EV-Std"
       }
    },
-   "version" : "v1.3.3"
+   "version" : "v2.0.0"
 }
 

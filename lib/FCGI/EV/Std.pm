@@ -5,7 +5,7 @@ use strict;
 use utf8;
 use Carp;
 
-our $VERSION = 'v1.3.3';
+our $VERSION = 'v2.0.0';
 
 use Scalar::Util qw( weaken );
 
@@ -110,7 +110,7 @@ FCGI::EV::Std - Handler class to use with FCGI::EV
 
 =head1 VERSION
 
-This document describes FCGI::EV::Std version v1.3.3
+This document describes FCGI::EV::Std version v2.0.0
 
 
 =head1 SYNOPSIS
