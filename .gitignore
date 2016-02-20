@@ -1,0 +1,8 @@
+/FCGI-EV-Std-*
+/.build
+/_build*
+/Build
+MYMETA.*
+!META.json
+/.prove
+/tmp/
