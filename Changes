@@ -1,6 +1,7 @@
 Revision history for FCGI-EV-Std
 
 {{$NEXT}}
+	- Reformat doc.
 
 v2.0.0  2016-02-20 13:36:43 EET
 	- Switch to Dist::Milla.

@@ -172,23 +172,27 @@ will be called if main::START or $callback will throw exception.
 Exceptions within PRE, POST and ERROR will not be intercepted and will
 kill your process.
 
-=over
+=head2 send
 
-=item send( $data )
+    $this->send( $data );
 
 Will send $data as (part of) CGI reply. Can be called any amount of times
 before done() was called.
 
 Return nothing.
 
-=item done()
+=head2 done
+
+    $this->done();
 
 Will finish processing current request. WARNING! User shouldn't keep
 references to $this after calling done()!
 
 Return nothing.
 
-=item wrap_cb( $callback, @params )
+=head2 wrap_cb
+
+    $this->wrap_cb( \&callback, @params );
 
 Will generate special CODEREF which, when called, will result in calling
 $callback->($this, @params, @callback_params). User must ALWAYS use this way
@@ -200,8 +204,6 @@ hook.
 
 The PRE and POST hooks will have only parameter: $this.
 The ERROR hook will two parameters: $this and $exception (stored copy of $@).
-
-=back
 
 
 =head1 SUPPORT
@@ -256,7 +258,7 @@ Alex Efros E<lt>powerman@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2009 by Alex Efros E<lt>powerman@cpan.orgE<gt>.
+This software is Copyright (c) 2009- by Alex Efros E<lt>powerman@cpan.orgE<gt>.
 
 This is free software, licensed under:
 

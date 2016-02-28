@@ -73,35 +73,43 @@ writing non-blocking CGI ease.
 
 Use these global variables to configure FCGI::EV::Std:
 
-- $FCGI::EV::Std::BLOCKING = 1
+## BLOCKING
 
-    If true, then user function set in $FCGI::EV::Std::MAIN will be called in
-    blocking mode and without any parameters.
+    $FCGI::EV::Std::BLOCKING = 1;
 
-    If false, then user function set in $FCGI::EV::Std::MAIN will be called in
-    non-blocking mode, with parameter $server. Also, if $FCGI::EV::Std::HUP set
-    to user function, then it will be called if connection to web server is
-    closed before CGI sent it reply.
+If true, then user function set in $FCGI::EV::Std::MAIN will be called in
+blocking mode and without any parameters.
 
-- $FCGI::EV::Std::MAX\_STDIN = 1\*1024\*1024
+If false, then user function set in $FCGI::EV::Std::MAIN will be called in
+non-blocking mode, with parameter $server. Also, if $FCGI::EV::Std::HUP set
+to user function, then it will be called if connection to web server is
+closed before CGI sent it reply.
 
-    Limit on STDIN size. Increase if you need to receive large files using POST.
+## MAX\_STDIN
 
-- $FCGI::EV::Std::MAIN = \\&main::main
+    $FCGI::EV::Std::MAX_STDIN = 1*1024*1024;
 
-    User function called to process (or start processing in non-blocking mode)
-    incoming CGI request.
+Limit on STDIN size. Increase if you need to receive large files using POST.
 
-- $FCGI::EV::Std::HUP = undef
+## MAIN
 
-    User function called only in non-blocking mode to
-    notify about closed connection and, if possible, interrupt current CGI
-    request.
+    $FCGI::EV::Std::MAIN = \&main::main;
 
-    This function got one parameter - $server object. It's same $server as was
-    given to $FCGI::EV::Std::MAIN function when this request was started (this
-    is how user can identify which of currently executing requests was
-    interrupted). The $server object will be destroyed shortly after that.
+User function called to process (or start processing in non-blocking mode)
+incoming CGI request.
+
+## HUP
+
+    $FCGI::EV::Std::HUP = undef;
+
+User function called only in non-blocking mode to
+notify about closed connection and, if possible, interrupt current CGI
+request.
+
+This function got one parameter - $server object. It's same $server as was
+given to $FCGI::EV::Std::MAIN function when this request was started (this
+is how user can identify which of currently executing requests was
+interrupted). The $server object will be destroyed shortly after that.
 
 # DIAGNOSTICS
 
@@ -156,7 +164,7 @@ Alex Efros &lt;powerman@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2009 by Alex Efros &lt;powerman@cpan.org>.
+This software is Copyright (c) 2009- by Alex Efros &lt;powerman@cpan.org>.
 
 This is free software, licensed under:
 
