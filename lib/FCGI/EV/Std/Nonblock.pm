@@ -5,7 +5,7 @@ use strict;
 use utf8;
 use Carp;
 
-our $VERSION = 'v2.0.0';
+our $VERSION = 'v2.0.1';
 
 use Scalar::Util qw( weaken refaddr );
 
@@ -101,7 +101,7 @@ FCGI::EV::Std::Nonblock - Ease non-blocking CGI using FCGI::EV::Std
 
 =head1 VERSION
 
-This document describes FCGI::EV::Std::Nonblock version v2.0.0
+This document describes FCGI::EV::Std::Nonblock version v2.0.1
 
 
 =head1 SYNOPSIS
